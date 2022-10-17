@@ -24,6 +24,36 @@ def arrow(dir_):
             return '\U0001f883'
     return ''
 
+def arrow_parts(dir_):
+    char = arrow(dir_)
+    match dir_:
+        case 'left':
+            return (char, ' \n', '   \n', '   ')
+        case 'right':
+            return (' ', f'{char}\n', '   \n', '   ')
+        case 'up':
+            return (' ', ' \n', f' {char} \n', '   ')
+        case 'down':
+            return (' ', ' \n', '   \n', f' {char} ')
+        case '':
+            return (' ', ' \n', '   \n', '  ')
+    assert False
+
+def render_cell(p):
+    tile, color = p
+    arrow(tile)
+    l, r, u, d = arrow_parts(tile)
+    block = (' ', '')
+    if color != '':
+        block = ('\u2588', Style(color=Color.from_triplet(parse_rgb_hex(color))))
+    return Text.assemble(
+        (u, ''),
+        (l, ''),
+        block,
+        (r, ''),
+        (d, ''),
+    )
+
 def render(console, data):
     table = Table(show_lines=True)
     table.add_column('')
@@ -32,7 +62,8 @@ def render(console, data):
     
     for i in reversed(range(10)):
         table.add_row(str(i), *[
-            Text.assemble(('\u2588', Style(color=Color.from_triplet(parse_rgb_hex(p[1]))))) if p[1] != '' else arrow(p[0]) for p in [data['grid'][j][i] for j in range(10)]
+            render_cell(p) for p in [data['grid'][j][i] for j in range(10)]
+            #Text.assemble(('\u2588', Style(color=Color.from_triplet(parse_rgb_hex(p[1]))))) if p[1] != '' else arrow(p[0]) for p in [data['grid'][j][i] for j in range(10)]
         ])
     
     console.print(table)
