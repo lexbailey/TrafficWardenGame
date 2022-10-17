@@ -82,7 +82,7 @@ class TrafficWardenLogic:
             if cell.tile is not None:
                 newdir = cell.tile
             dirname, dirfun = newdir
-            newxy = Dir.clamp(dirfun(xy), 10)
+            newxy = Dir.clamp(dirfun(xy), 9)
             oldcell = self.get_cell(xy)
             newcell = self.get_cell(newxy)
             if newcell.car is None:
