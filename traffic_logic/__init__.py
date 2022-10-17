@@ -3,12 +3,23 @@ class Dir:
     up = ('up', lambda xy: (xy[0], xy[1]+1))
     left = ('left', lambda xy: (xy[0]-1, xy[1]))
     right = ('right', lambda xy: (xy[0]+1, xy[1]))
+
     def clamp(xy, size):
         x,y=xy
         return (
             max(0, min(x,size))
             ,max(0, min(y,size))
         )
+
+    def reflect(d):
+        if d == Dir.down:
+            return Dir.up
+        if d == Dir.up:
+            return Dir.down
+        if d == Dir.left:
+            return Dir.right
+        if d == Dir.right:
+            return Dir.left
 
 class Cell:
     def __init__(self):
@@ -83,6 +94,10 @@ class TrafficWardenLogic:
                 newdir = cell.tile
             dirname, dirfun = newdir
             newxy = Dir.clamp(dirfun(xy), 9)
+            if newxy == xy:
+                newdir = Dir.reflect(dir_)
+                dirname, dirfun = newdir
+                newxy = Dir.clamp(dirfun(xy), 9)
             oldcell = self.get_cell(xy)
             newcell = self.get_cell(newxy)
             if newcell.car is None:
@@ -90,7 +105,13 @@ class TrafficWardenLogic:
                 newcell.set_car(player)
                 oldcell.set_car(None)
             else:
-                player.set_pos((xy, newdir))
+                newdir = Dir.reflect(dir_)
+                dirname, dirfun = newdir
+                newxy = Dir.clamp(dirfun(xy), 9)
+                newcell = self.get_cell(newxy)
+                player.set_pos((newxy, newdir))
+                newcell.set_car(player)
+                oldcell.set_car(None)
 
     def get_player_colors(self):
         return [p.color for p in self.players]

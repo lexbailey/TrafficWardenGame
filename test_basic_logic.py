@@ -63,7 +63,6 @@ def render(console, data):
     for i in reversed(range(10)):
         table.add_row(str(i), *[
             render_cell(p) for p in [data['grid'][j][i] for j in range(10)]
-            #Text.assemble(('\u2588', Style(color=Color.from_triplet(parse_rgb_hex(p[1]))))) if p[1] != '' else arrow(p[0]) for p in [data['grid'][j][i] for j in range(10)]
         ])
     
     console.print(table)
