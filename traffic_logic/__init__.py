@@ -1,3 +1,5 @@
+import secrets
+
 class Dir:
     down = ('down', lambda xy: (xy[0], xy[1]-1))
     up = ('up', lambda xy: (xy[0], xy[1]+1))
@@ -138,3 +140,62 @@ class TrafficWardenLogic:
             'player_colors': self.get_player_colors(),
             'grid': self.render_grid(),
         }
+
+class GameHandler:
+    def __init__(self, callback):
+        self.state = 'lobby'
+        self.game_logic = None
+        self.players = {}
+        self.notify = callback
+
+    def get_state(self):
+        return self.state
+
+    def player_join(self):
+        if self.state != 'lobby':
+            return # Can only do this action in the lobby
+        tok = secrets.token_urlsafe(10)
+        self.players[tok] = '[New player]'
+        self.notify()
+        return tok
+
+    def player_quit(self, tok):
+        if self.state != 'lobby':
+            return # Can only do this action in the lobby
+        if tok not in self.players:
+            return
+        self.notify()
+        del self.players[tok]
+
+    def player_rename(self, tok, name):
+        if self.state != 'lobby':
+            return # Can only do this action in the lobby
+        if tok not in self.players:
+            return
+        self.notify()
+        self.players[tok] = name
+
+    def get_projector_data(self):
+        if self.state == 'lobby':
+            return {
+                'state': self.state,
+                'players': self.players,
+            }
+        if self.state == 'running':
+            return {
+                'state': self.state,
+                'players': self.players,
+                'game': self.game_logic.get_projector_render_data()
+            }
+        return {
+            'state': 'error'
+        }
+
+    def start(self):
+        if self.state != 'lobby':
+            return
+        if len(self.players) < 2:
+            return
+        self.game_logic = TrafficWardenLogic(len(self.players))
+        self.state = 'running'
+        self.notify()

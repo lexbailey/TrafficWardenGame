@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Traffic Warden game</title>
+    </head>
+    <body>
+        <h1>Traffic Warden game</h1>
+        <p>Play the game Traffic Warden with friends! <a href='game'>{% if is_in_game %}Resume ongoing game{% else %}Start a game{% endif %}</a></p>
+        {% if is_in_game %}
+            <p>To cancel the existing game session: <a href='abort'>abort ongoing game</a></p>
+        {% endif %}
+    </body>
+</html>
