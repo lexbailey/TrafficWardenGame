@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
-from traffic_logic import GameHandler
+import eventlet
+eventlet.monkey_patch()
+from traffic_logic import GameHandler, Dir
 import flask
 import secrets
+from flask_socketio import SocketIO
+import qrcode
+from io import BytesIO
+import base64
 
 app = flask.Flask(__name__, template_folder='html')
 app.secret_key = secrets.token_bytes()
 
+host='192.168.1.16'
+port=5000
+url_base = f'http://{host}:{port}'
+
+sio = SocketIO(app)
+
 games = {}
+projectors = {}
+players = {}
 
 @app.route('/')
 def root():
@@ -17,18 +31,38 @@ def root():
     return flask.render_template('index.html', is_in_game=is_in_game)
 
 def notify(tok):
-    print(f"Game with token {tok} has a new sate")
+    print(f'notify {tok}')
+    if tok not in games:
+        return
+    game = games[tok]
+    for p in game.get_projectors():
+        print(f'notify {tok} projector: {p}')
+        sio.emit('new_projector_state', game.get_projector_data(), to=p)
+    for ptok, p in game.get_players().items():
+        sid = p.get_sid()
+        if sid is not None:
+            sio.emit('new_player_state', p.get_phone_data(), to=sid)
 
+def join_info(tok):
+    join_url = f'{url_base}/join/{tok}'
+    buf = BytesIO()
+    qr_img = qrcode.make(join_url)
+    qr_img.save(buf, format='png')
+    qr = f'data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}'
+    return join_url, qr
+    
 @app.route('/game')
 def game():
     if 'game_token' in flask.session:
         tok = flask.session['game_token']
         if tok in games:
-            return flask.render_template('projector.html', tok=tok)
+            join_url, qr = join_info(tok)
+            return flask.render_template('projector.html', tok=tok, join_url=join_url, qr=qr)
     tok = secrets.token_urlsafe(10)
-    games[tok] = GameHandler(lambda: notify(tok))
+    games[tok] = GameHandler(lambda: notify(tok), sio.start_background_task)
     flask.session['game_token'] = tok
-    return flask.render_template('projector.html', tok=tok)
+    join_url, qr = join_info(tok)
+    return flask.render_template('projector.html', tok=tok, join_url=join_url, qr=qr)
 
 @app.route('/abort')
 def abort():
@@ -41,14 +75,21 @@ def abort():
 def unknown_game():
     return flask.render_template('error.html', error='You tried to join or play a game that doesn\'t exist. Perhaps it has already ended?')
 
+def game_full():
+    return flask.render_template('error.html', error='Sorry, this game already has the maximum number of players.')
+
 @app.route('/join/<token>')
 def join(token):
     if token not in games:
         return unknown_game()
     flask.session['game_token'] = token
     game = games[token]
-    flask.session['player_token'] = game.player_join()
-    return flask.redirect('/play', code=303)
+    player = game.player_join()
+    can_join = player is not None
+    if can_join:
+        flask.session['player_token'] = player.tok
+        return flask.redirect('/play', code=303)
+    return game_full()
 
 @app.route('/play')
 def play():
@@ -58,4 +99,54 @@ def play():
     if tok not in games:
         return unknown_game()
     game = games[tok]
-    return flask.render_template('phone.html', game=game)
+    ptok = flask.session['player_token']
+    return flask.render_template('phone.html', gtok=tok, ptok=ptok)
+
+@sio.on('register_projector')
+def register_projector(tok):
+    sid = flask.request.sid
+    if tok not in games:
+        return
+    print(f'Projector {sid} joined game {tok}')
+    game = games[tok]
+    game.add_projector(sid)
+    projectors[sid] = tok
+    sio.emit('newstate', game.get_projector_data())
+
+    # Test code
+    game.player_join()
+    game.player_join()
+
+@sio.on('register_player')
+def register_player(gtok, ptok):
+    sid = flask.request.sid
+    if gtok not in games:
+        return
+    print(f'Player {sid} joined game {gtok}')
+    game = games[gtok]
+    player = game.get_player(ptok)
+    players[sid] = player
+    player.set_sid(sid)
+    sio.emit('new_player_state', player.get_phone_data())
+
+@sio.on('start_game')
+def start_game():
+    sid = flask.request.sid
+    if sid not in projectors:
+        return
+    tok = projectors[sid]
+    if tok not in games:
+        return
+    game = games[tok]
+    game.start()
+
+@sio.on('rename')
+def rename(newname):
+    sid = flask.request.sid
+    if sid not in players:
+        return
+    player = players[sid]
+    player.rename(newname)
+
+if __name__ == '__main__':
+    sio.run(app, host=host, port=port)

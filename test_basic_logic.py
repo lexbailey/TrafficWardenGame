@@ -9,6 +9,7 @@ from rich.style import Style
 
 game = TrafficWardenLogic(8)
 
+colors = game.get_player_colors()
 
 console = Console()
 
@@ -40,7 +41,10 @@ def arrow_parts(dir_):
     assert False
 
 def render_cell(p):
-    tile, color = p
+    tile, player_id, player_dir = p
+    color = ''
+    if player_id >= 0:
+        color = '%06x' % colors[player_id]
     arrow(tile)
     l, r, u, d = arrow_parts(tile)
     block = (' ', '')

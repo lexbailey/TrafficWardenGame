@@ -2,9 +2,53 @@
 <html>
     <head>
         <title>Traffic Warden game</title>
+        <script src="static/babel/babel.min.js"></script>
+        <script src="static/react/react.production.min.js"></script>
+        <script src="static/react/react-dom.production.min.js"></script>
+        <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
+        <script>
+        </script>
     </head>
     <body>
         <h1>Traffic Warden game</h1>
-        <p>You have joined the game!</p>
+        <div id='game'></div>
     </body>
+    <script type='text/babel'>
+        class Game extends React.Component {
+            constructor(props){
+                super(props);
+                this.state = { proj: {state:'lobby', players:{}} }
+                var socket = io();
+                socket.on('new_player_state', (state)=>{
+                    console.log(state);
+                    this.setState({proj: state.projector, player: state.player});
+                });
+                socket.emit('register_player', this.props.gtok, this.props.ptok);
+
+                this.socket = socket;
+            }
+
+            render(){
+                if (this.state.proj.state == 'lobby') {
+                    return <div>
+                        <h2>Game lobby</h2>
+                        <label for='name'>Name</label>
+                        <input onInput={(e)=>{this.socket.emit('rename', e.target.value)}} />
+                        <p>{Object.keys(this.state.proj.players).length} players in.</p>
+                    </div>;
+                }
+                else if (this.state.proj.state == 'running') {
+                    return <div>
+                        <h2>Game in progress</h2>
+                    </div>
+                }
+                else{
+                    return <div><p>Error, game is in unknown state</p></div>
+                }
+            }
+        }
+        const container = document.getElementById('game');
+        const root = ReactDOM.createRoot(container);
+        root.render(<Game gtok='{{gtok}}' ptok='{{ptok}}'/>)
+    </script>
 </html>

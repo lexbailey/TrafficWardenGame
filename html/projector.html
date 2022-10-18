@@ -2,10 +2,130 @@
 <html>
     <head>
         <title>Traffic Warden game</title>
+        <script src="static/babel/babel.min.js"></script>
+        <script src="static/react/react.production.min.js"></script>
+        <script src="static/react/react-dom.production.min.js"></script>
+        <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
+        <style>
+            .gridcell{
+                border: 1px solid black;
+            }
+        </style>
     </head>
     <body>
         <h1>Traffic Warden game</h1>
-        <p>Game in progress</p>
-        <p>Join the game here: join/{{tok}}</p>
+        <div id='game'></div>
     </body>
+    <script type='text/babel'>
+
+        class Game extends React.Component {
+            constructor(props){
+                super(props);
+                this.state = { proj: {state:'lobby', players:{}} }
+                var socket = io();
+                socket.on('new_projector_state', (state)=>{
+                    console.log(state);
+                    this.setState({proj: state});
+                });
+                socket.emit('register_projector', '{{tok}}');
+
+                this.socket = socket;
+            }
+
+            get_angle(dirname){
+                let rot = 0;
+                if (dirname == 'down') {rot = 90;}
+                if (dirname == 'left') {rot = 180;}
+                if (dirname == 'up') {rot = 270;}
+                return rot;
+            }
+
+            renderCell(c){
+                const tile_id = c[0];
+                const player_id = c[1];
+                const player_dir = c[2];
+
+                let car = '';
+                let tile= '';
+                if (player_id >= 0){
+                    let rot = this.get_angle(player_dir);
+                    car = <img src={`static/images/car_${player_id}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                }
+                if (tile_id != ''){
+                    let rot = this.get_angle(tile_id);
+                    tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                }
+                return <div class='gridcell'>
+                    {tile}
+                    {car}
+                </div>
+            }
+
+            renderGrid(grid){
+                return <div style={ {
+                        display:'grid', gridTemplateColumns:'repeat(10, 72px)',
+                        gridTemplateRows: 'repeat(10, 72px)'
+                    } }>
+                    {
+                        (()=>{
+                            var parts = [];
+                            for (var y = 9; y >= 0; y--){
+                                for (var x = 0; x <= 9; x++){
+                                    parts.push(this.renderCell(grid[x][y]));
+                                }
+                            }
+                            return parts;
+                        })()
+                    }
+                </div>
+            }
+
+            renderPlayerOrder(order){
+                return <div>{order.map(i=>
+                    <img src={`static/images/car_${i}.svg`} width='40px' />
+                )}</div>;
+            }
+
+            summary(){
+                let st = this.state.proj.game.cur_state;
+                console.log(st);
+                if (st == 'inital') {return 'Ready to begin';}
+                if (st == 'assign_cards') {return 'You\'re getting new direction tiles now...';}
+                if (st == 'await_play') {return 'Look at your phone! Quick, place some tiles!';}
+                if (st == 'simulate') {return 'Simulating the next five steps...';}
+            }
+
+            render(){
+                if (this.state.proj.state == 'lobby') {
+                    return <div>
+                        <h2>Game lobby</h2>
+                        <p>Join the game here: {this.props.join_url}</p>
+                        <p>or scan this qr code</p>
+                        <img src={this.props.qrdata}/>
+                        <h2>Players ({Object.keys(this.state.proj.players).length})</h2>
+                        <ul>
+                        {Object.entries(this.state.proj.players).map(e=><li>{e[1].name}</li>)}
+                        </ul>
+                        <h2>Controls</h2>
+                        <button onClick={()=>{console.log('foo');this.socket.emit('start_game')}}>Start game</button>
+                    </div>;
+                }
+                else if (this.state.proj.state == 'running') {
+                    return <div>
+                        <h2>Game in progress</h2>
+                        <p>{this.summary()}</p>
+                        {this.renderGrid(this.state.proj.game.grid)}
+                        <h3>Play order for this round</h3>
+                        {this.renderPlayerOrder(this.state.proj.game.play_order)}
+                    </div>
+                }
+                else{
+                    return <div><p>Error, game is in unknown state</p></div>
+                }
+            }
+        }
+        const container = document.getElementById('game');
+        const root = ReactDOM.createRoot(container);
+        root.render(<Game tok='{{tok}}' join_url='{{join_url}}' qrdata='{{qr}}'/>)
+    </script>
 </html>
