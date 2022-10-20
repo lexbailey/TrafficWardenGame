@@ -43,6 +43,7 @@ class Cell:
     def __init__(self):
         self.tile = None
         self.car = None
+        self.tile_player = None
 
     def set_car(self, car):
         self.car = car
@@ -50,12 +51,18 @@ class Cell:
     def set_tile(self, tile_dir):
         self.tile = tile_dir
 
+    def set_tile_player(self, p):
+        self.tile_player = p
+
+    def is_free(self):
+        return self.tile is None
+
 class Player:
     def __init__(self, index, color, pos):
         self.index = index
         self.color = color
         self.pos = pos
-        self.cur_cards = []
+        self.cur_tiles = []
 
     def get_pos(self):
         return self.pos
@@ -63,15 +70,24 @@ class Player:
     def set_pos(self, pos):
         self.pos = pos
 
-    def assign_cards(self):
+    def assign_tiles(self):
         options = ['up', 'down', 'left', 'right'] * 2
         random.shuffle(options)
-        self.cur_cards = options[0:3]
+        self.cur_tiles = options[0:3]
+
+    def can_place(self, tile):
+        return tile in self.cur_tiles
+
+    def use_tile(self, tile):
+        self.cur_tiles.remove(tile)
+
+    def drain_tiles(self):
+        self.cur_tiles = []
 
     def get_data(self):
         return {
             'color': self.color,
-            'cards': self.cur_cards,
+            'tiles': self.cur_tiles,
         }
 
 class TrafficWardenLogic:
@@ -115,9 +131,10 @@ class TrafficWardenLogic:
         x, y = xy
         return self.grid[x][y]
 
-    def put_tile(self, xy, tile):
+    def put_tile(self, xy, tile, player_index):
         x, y = xy
         self.grid[x][y].set_tile(tile)
+        self.grid[x][y].set_tile_player(player_index)
 
     def step_player(self, player_id):
         p = player_id
@@ -153,9 +170,9 @@ class TrafficWardenLogic:
         self.state = newstate
         self.wait = wait
 
-    def assign_cards(self):
+    def assign_tiles(self):
         for p in self.players:
-            p.assign_cards()
+            p.assign_tiles()
         
     def decide_order(self):
         ids = list(range(self.n_players))
@@ -167,15 +184,20 @@ class TrafficWardenLogic:
             for y in range(10):
                 self.grid[x][y].set_tile(None)
 
+    def drain_tiles(self):
+        for p in self.players:
+            p.drain_tiles()
+
     def step(self):
         if self.state == 'initial':
             self.clear_tiles()
-            self.to_state('assign_cards', 2)
-        elif self.state == 'assign_cards':
+            self.to_state('assign_tiles', 2)
+        elif self.state == 'assign_tiles':
             self.decide_order()
-            self.assign_cards()
+            self.assign_tiles()
             self.to_state('await_play', 20)
         elif self.state == 'await_play':
+            self.drain_tiles()
             self.sim_rounds = 5
             self.cur_player = 0
             self.to_state('simulate', 1)
@@ -189,7 +211,7 @@ class TrafficWardenLogic:
                     self.cur_player = 0
                 self.to_state('simulate', 1)
             else:
-                self.to_state('assign_cards', 2)
+                self.to_state('initial', 2)
 
     def get_wait(self):
         return self.wait
@@ -200,7 +222,7 @@ class TrafficWardenLogic:
     def get_player(self, i):
         return self.players[i]
 
-    def render_grid(self):
+    def render_grid(self, pov):
         rgrid = []
         for col in self.grid:
             rcol = []
@@ -208,6 +230,11 @@ class TrafficWardenLogic:
                 dirname = ''
                 if cell.tile is not None:
                     dirname, dirfun = cell.tile
+                    if self.state != 'simulate':
+                        if pov is None:
+                            dirname = '?'
+                        if pov != cell.tile_player:
+                            dirname = '?'
                 player = -1
                 player_dir = ''
                 if cell.car is not None:
@@ -219,10 +246,10 @@ class TrafficWardenLogic:
             rgrid.append(rcol)
         return rgrid
 
-    def get_projector_render_data(self):
+    def get_projector_render_data(self, pov=None):
         return {
             'player_colors': self.get_player_colors(),
-            'grid': self.render_grid(),
+            'grid': self.render_grid(pov),
             'last_state': self.last_state,
             'cur_state': self.state,
             'play_order': self.play_order
@@ -254,17 +281,42 @@ class PlayerHandler:
             self.name = newname
             self.game().notify()
 
+    def get_game_logic(self):
+        game = self.game()
+        if game is not None:
+            return game.game_logic
+
+    def get_logical_player(self):
+        game = self.game()
+        if game is None:
+            return None
+        if game.game_logic is not None:
+            return game.game_logic.get_player(self.index)
+
     def get_phone_data(self):
         game = self.game()
         if game is None:
             return {}
-        proj_data = game.get_projector_data()
+        proj_data = game.get_projector_data(pov=self.index)
         player_data = self.get_player_data()
         if game.game_logic is not None:
             game_player = game.game_logic.get_player(self.index)
             if game_player is not None:
                 player_data.update(game_player.get_data())
         return {'projector':proj_data, 'player':player_data}
+
+    def notify(self):
+        self.game().notify()
+
+    def place_tile(self, dir_, x, y):
+        logic = self.get_game_logic()
+        player = self.get_logical_player()
+        if logic is not None:
+            if logic.get_cell((x, y)).is_free():
+                if player.can_place(dir_):
+                    player.use_tile(dir_)
+                    logic.put_tile((x, y), Dir.from_name(dir_), self.index)
+                    self.notify()
 
 class GameHandler:
     MAX_PLAYERS = 8
@@ -311,7 +363,7 @@ class GameHandler:
         self.notify()
         del self.players[tok]
 
-    def get_projector_data(self):
+    def get_projector_data(self, pov=None):
         players = [p.get_player_data() for tok, p in self.players.items()]
         if self.state == 'lobby':
             return {
@@ -322,7 +374,7 @@ class GameHandler:
             return {
                 'state': self.state,
                 'players': players,
-                'game': self.game_logic.get_projector_render_data()
+                'game': self.game_logic.get_projector_render_data(pov=pov)
             }
         return {
             'state': 'error'

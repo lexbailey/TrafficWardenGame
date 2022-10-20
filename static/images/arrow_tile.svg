@@ -25,8 +25,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="7.319248"
-     inkscape:cx="32.790254"
-     inkscape:cy="41.05613"
+     inkscape:cx="34.429766"
+     inkscape:cy="18.649457"
      inkscape:window-width="1499"
      inkscape:window-height="1236"
      inkscape:window-x="1409"
@@ -48,14 +48,14 @@
     </clipPath>
     <clipPath
        clipPathUnits="userSpaceOnUse"
-       id="clipPath7622">
+       id="clipPath8824">
       <rect
          style="font-variation-settings:normal;opacity:1;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
-         id="rect7624"
+         id="rect8826"
          width="18.520834"
          height="18.520834"
          x="0"
-         y="0" />
+         y="0.1350913" />
     </clipPath>
   </defs>
   <g
@@ -64,7 +64,9 @@
      id="layer1">
     <g
        id="g7620"
-       clip-path="url(#clipPath7622)">
+       clip-path="url(#clipPath8824)"
+       mask="none"
+       transform="translate(0,-0.13509131)">
       <g
          id="g7329">
         <rect
@@ -126,9 +128,10 @@
       </g>
       <g
          id="g7329-7"
-         clip-path="url(#clipPath7597)">
+         clip-path="url(#clipPath7597)"
+         style="fill:#00ff00">
         <rect
-           style="fill:#ff7f2a;stroke-width:1.165;stroke-linejoin:round"
+           style="fill:#00ff00;stroke-width:1.165;stroke-linejoin:round"
            id="rect7298-9"
            width="30"
            height="30"

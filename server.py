@@ -148,5 +148,13 @@ def rename(newname):
     player = players[sid]
     player.rename(newname)
 
+@sio.on('place_tile')
+def place_tile(tilename, x, y):
+    sid = flask.request.sid
+    if sid not in players:
+        return
+    player = players[sid]
+    player.place_tile(tilename, x, y)
+
 if __name__ == '__main__':
     sio.run(app, host=host, port=port)

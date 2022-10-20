@@ -83,6 +83,6 @@ render(console, render_data)
 import time
 for i in range(20):
     time.sleep(0.7)
-    game.step([0,1,2,3,4,5,6,7])
+    game.step()
     render_data = game.get_projector_render_data()
     render(console, render_data)

@@ -52,8 +52,13 @@
                     car = <img src={`static/images/car_${player_id}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
                 }
                 if (tile_id != ''){
-                    let rot = this.get_angle(tile_id);
-                    tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                    if (tile_id == '?'){
+                        tile = <img src={'static/images/mystery_tile.svg'} style={ {position:'absolute'} }/>;
+                    }
+                    else{
+                        let rot = this.get_angle(tile_id);
+                        tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                    }
                 }
                 return <div class='gridcell'>
                     {tile}

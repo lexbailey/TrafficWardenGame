@@ -6,8 +6,15 @@
         <script src="static/react/react.production.min.js"></script>
         <script src="static/react/react-dom.production.min.js"></script>
         <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
-        <script>
-        </script>
+        <style>
+            .gridcell{
+                border: 1px solid black;
+            }
+            .tilebox{
+                padding-right: 10px;
+                display: inline-block;
+            }
+        </style>
     </head>
     <body>
         <h1>Traffic Warden game</h1>
@@ -17,7 +24,7 @@
         class Game extends React.Component {
             constructor(props){
                 super(props);
-                this.state = { proj: {state:'lobby', players:{}} }
+                this.state = { local: {selectedTile: ''}, proj: {state:'lobby', players:{}} }
                 var socket = io();
                 socket.on('new_player_state', (state)=>{
                     console.log(state);
@@ -26,6 +33,90 @@
                 socket.emit('register_player', this.props.gtok, this.props.ptok);
 
                 this.socket = socket;
+                this.renderTile = this.renderTile.bind(this);
+                this.renderTileSelection = this.renderTileSelection.bind(this);
+                this.selectTile = this.selectTile.bind(this);
+                this.selectCell = this.selectCell.bind(this);
+            }
+
+            get_angle(dirname){
+                let rot = 0;
+                if (dirname == 'down') {rot = 90;}
+                if (dirname == 'left') {rot = 180;}
+                if (dirname == 'up') {rot = 270;}
+                return rot;
+            }
+
+            selectCell(x, y){
+                console.log(`put ${this.state.local.selectedTile} in cell ${x},${y}`);
+                this.socket.emit('place_tile', this.state.local.selectedTile, x, y);
+            }
+
+            renderCell(c, x, y){
+                const tile_id = c[0];
+                const player_id = c[1];
+                const player_dir = c[2];
+
+                let car = '';
+                let tile= '';
+                if (player_id >= 0){
+                    let rot = this.get_angle(player_dir);
+                    car = <img src={`static/images/car_${player_id}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                }
+                if (tile_id != ''){
+                    if (tile_id == '?'){
+                        tile = <img src={'static/images/mystery_tile.svg'} style={ {position:'absolute'} }/>;
+                    }
+                    else{
+                        let rot = this.get_angle(tile_id);
+                        tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                    }
+                }
+                return <div class='gridcell' onClick={()=>this.selectCell(x, y)}>
+                    {tile}
+                    {car}
+                </div>
+            }
+
+            renderGrid(grid){
+                return <div style={ {
+                        display:'grid', gridTemplateColumns:'repeat(10, 72px)',
+                        gridTemplateRows: 'repeat(10, 72px)'
+                    } }>
+                    {
+                        (()=>{
+                            var parts = [];
+                            for (var y = 9; y >= 0; y--){
+                                for (var x = 0; x <= 9; x++){
+                                    parts.push(this.renderCell(grid[x][y], x, y));
+                                }
+                            }
+                            return parts;
+                        })()
+                    }
+                </div>
+            }
+
+            selectTile(tile){
+                console.log('select', tile);
+                let local = this.state.local
+                local.selectedTile = tile
+                this.setState({local})
+            }
+
+            renderTile(tile){
+                let rot = this.get_angle(tile);
+                return <div class='tilebox'>
+                    <img src={'static/images/arrow_tile.svg'} style={ { transform:`rotate(${rot}deg)`} } onClick={()=>this.selectTile(tile)}/>
+                </div>;
+            }
+
+            renderTileSelection(tiles){
+                console.log(tiles);
+                return <div>
+                    { tiles.length>0?<p>Choose a tile</p>:'' }
+                    {tiles.map(this.renderTile)}
+                </div>;
             }
 
             render(){
@@ -40,6 +131,8 @@
                 else if (this.state.proj.state == 'running') {
                     return <div>
                         <h2>Game in progress</h2>
+                        {this.renderTileSelection(this.state.player.tiles)}
+                        {this.renderGrid(this.state.proj.game.grid)}
                     </div>
                 }
                 else{

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="70"
+   height="70"
+   viewBox="0 0 18.520833 18.520833"
+   version="1.1"
+   id="svg6751"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
+   sodipodi:docname="mystery_tile.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview6753"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="5.1754899"
+     inkscape:cx="45.019893"
+     inkscape:cy="43.184318"
+     inkscape:window-width="1499"
+     inkscape:window-height="1236"
+     inkscape:window-x="1409"
+     inkscape:window-y="130"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs6748">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath7597">
+      <rect
+         style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+         id="rect7599"
+         width="23.076685"
+         height="8.3732891"
+         x="-0.75376809"
+         y="5.3403535" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath8824">
+      <rect
+         style="font-variation-settings:normal;opacity:1;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+         id="rect8826"
+         width="18.520834"
+         height="18.520834"
+         x="0"
+         y="0.1350913" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath8824-0">
+      <rect
+         style="font-variation-settings:normal;opacity:1;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+         id="rect8826-2"
+         width="18.520834"
+         height="18.520834"
+         x="0"
+         y="0.1350913" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath8824-4">
+      <rect
+         style="font-variation-settings:normal;opacity:1;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+         id="rect8826-7"
+         width="18.520834"
+         height="18.520834"
+         x="0"
+         y="0.1350913" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath8824-5">
+      <rect
+         style="font-variation-settings:normal;opacity:1;fill:#ff7f2a;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+         id="rect8826-6"
+         width="18.520834"
+         height="18.520834"
+         x="0"
+         y="0.1350913" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9289">
+      <rect
+         style="font-variation-settings:normal;opacity:1;fill:#00ff00;fill-opacity:1;stroke-width:1.165;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+         id="rect9291"
+         width="18.520834"
+         height="18.520834"
+         x="5.0270815"
+         y="0" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g9229"
+       transform="translate(-5.0270813)"
+       clip-path="url(#clipPath9289)">
+      <g
+         id="g7620"
+         clip-path="url(#clipPath8824)"
+         mask="none"
+         transform="translate(14.287498,-0.1350913)">
+        <g
+           id="g7329">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-5"
+           transform="translate(-6.3500003)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-62"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-9"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1"
+           transform="translate(-12.700002)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1-0"
+           transform="translate(-19.050006)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2-9"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7-3"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1-0-6"
+           transform="translate(-25.40001)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2-9-0"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7-3-6"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+      </g>
+      <g
+         id="g7620-3"
+         clip-path="url(#clipPath8824-0)"
+         mask="none"
+         transform="matrix(-1,0,0,1,14.287498,-0.13509132)">
+        <g
+           id="g7329-7">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-5"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-92"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-5-2"
+           transform="translate(-6.3500003)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-62-8"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-9-9"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1-7"
+           transform="translate(-12.700002)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2-3"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7-6"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1-0-1"
+           transform="translate(-19.050006)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2-9-2"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7-3-9"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+        <g
+           id="g7329-1-0-6-3"
+           transform="translate(-25.40001)">
+          <rect
+             style="fill:#ffffff;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-2-9-0-1"
+             width="30"
+             height="30"
+             x="-16.310677"
+             y="-3.0136194"
+             transform="rotate(-45)" />
+          <rect
+             style="fill:#999999;stroke-width:1.165;stroke-linejoin:round"
+             id="rect7298-6-7-3-6-9"
+             width="30"
+             height="30"
+             x="-18.25724"
+             y="-4.9797878"
+             transform="rotate(-45)" />
+        </g>
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:21.1513px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.528784"
+       x="4.96803"
+       y="17.251526"
+       id="text9285"><tspan
+         sodipodi:role="line"
+         id="tspan9283"
+         style="stroke-width:0.528784"
+         x="4.96803"
+         y="17.251526">?</tspan></text>
+  </g>
+</svg>
