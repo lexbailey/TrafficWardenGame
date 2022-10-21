@@ -36,12 +36,16 @@ def arrow_parts(dir_):
             return (' ', ' \n', f' {char} \n', '   ')
         case 'down':
             return (' ', ' \n', '   \n', f' {char} ')
+        case '?':
+            return ('?', '?\n', ' ? \n', ' ? ')
         case '':
-            return (' ', ' \n', '   \n', '  ')
+            return (' ', ' \n', '   \n', '   ')
     assert False
 
 def render_cell(p):
-    tile, player_id, player_dir = p
+    tile = p['tile']
+    player_id = p['car']
+    player_dir = p['car_dir']
     color = ''
     if player_id >= 0:
         color = '%06x' % colors[player_id]
@@ -71,18 +75,21 @@ def render(console, data):
     
     console.print(table)
 
-game.put_tile((1,3), Dir.down)
-game.put_tile((4,3), Dir.left)
-game.put_tile((2,6), Dir.up)
-game.put_tile((6,9), Dir.right)
+def place_tiles(game):
+    game.put_tile((1,3), Dir.down, 0)
+    game.put_tile((4,3), Dir.left, 0)
+    game.put_tile((2,6), Dir.up, 1)
+    game.put_tile((6,9), Dir.right, 2)
 
 
 render_data = game.get_projector_render_data()
 render(console, render_data)
 
 import time
-for i in range(20):
+for i in range(50):
     time.sleep(0.7)
     game.step()
     render_data = game.get_projector_render_data()
     render(console, render_data)
+    if i == 2:
+        place_tiles(game)

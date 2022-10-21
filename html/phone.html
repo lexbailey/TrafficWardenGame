@@ -24,7 +24,7 @@
         class Game extends React.Component {
             constructor(props){
                 super(props);
-                this.state = { local: {selectedTile: ''}, proj: {state:'lobby', players:{}} }
+                this.state = { local: {selectedTile: '', is_kicked:false}, proj: {state:'lobby', players:{}} }
                 var socket = io();
                 socket.on('new_player_state', (state)=>{
                     console.log(state);
@@ -126,13 +126,25 @@
                 </div>;
             }
 
+            quit(){
+                this.socket.emit('player_quit');
+                let local = this.state.local;
+                local.is_kicked = true;
+                this.setState({local})
+            }
+
             render(){
+                if (this.state.local.is_kicked || (this.state.player && this.state.player.kicked)){
+                    return <div><h2>{"Sad face :'("}</h2><p>{"You're no longer in the game, scan another QR code to join a new game."}</p></div>
+                }
                 if (this.state.proj.state == 'lobby') {
                     return <div>
                         <h2>Game lobby</h2>
+                        <p>Type your name and then wait for the game to start.</p>
                         <label for='name'>Name</label>
                         <input onInput={(e)=>{this.socket.emit('rename', e.target.value)}} />
                         <p>{Object.keys(this.state.proj.players).length} players in.</p>
+                        <button onClick={()=>{this.quit()}}>Leave lobby</button>
                     </div>;
                 }
                 else if (this.state.proj.state == 'running') {

@@ -120,10 +120,12 @@
                         <img src={this.props.qrdata}/>
                         <h2>Players ({Object.keys(this.state.proj.players).length})</h2>
                         <ul>
-                        {Object.entries(this.state.proj.players).map(e=><li>{e[1].name}</li>)}
+                        {Object.entries(this.state.proj.players).map(e=><li>{e[1].name}<img title={`click to remove ${e[1].name} from the game`} alt={`click to remove ${e[1].name} from the game`} src='static/images/remove_player.svg' onClick={()=>{this.socket.emit('remove_player', e[1].index)}} /></li>) }
                         </ul>
+                        {Object.keys(this.state.proj.players).length < 2?<p>Add more players! (At least two players required to start game)</p>:''}
                         <h2>Controls</h2>
-                        <button onClick={()=>{console.log('foo');this.socket.emit('start_game')}}>Start game</button>
+                        <button disabled={Object.keys(this.state.proj.players).length < 2} onClick={()=>{console.log('foo');this.socket.emit('start_game')}}>Start game</button>
+                        <button onClick={()=>{console.log('foo');this.socket.emit('reset_players')}}>Reset (Remove all players)</button>
                     </div>;
                 }
                 else if (this.state.proj.state == 'running') {

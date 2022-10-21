@@ -324,6 +324,10 @@ class PlayerHandler:
         self.tok = tok
         self.name = '[New player]'
         self.sid = None
+        self.is_kicked = False
+
+    def kick(self):
+        self.is_kicked = True
 
     def set_sid(self, sid):
         self.sid = sid
@@ -331,8 +335,11 @@ class PlayerHandler:
     def get_sid(self):
         return self.sid
 
+    def quit(self):
+        self.game().player_quit(self.tok)
+
     def get_player_data(self):
-        data = {'name': self.name, 'index': self.index}
+        data = {'name': self.name, 'index': self.index, 'kicked': False}
         game = self.game()
         if game.game_logic is not None:
             game_player = game.game_logic.get_player(self.index)
@@ -362,6 +369,8 @@ class PlayerHandler:
             return game.game_logic.get_player(self.index)
 
     def get_phone_data(self):
+        if self.is_kicked:
+            return {'projector':{}, 'player':{'kicked':True}}
         game = self.game()
         if game is None:
             return {}
@@ -424,8 +433,9 @@ class GameHandler:
             return # Can only do this action in the lobby
         if tok not in self.players:
             return
-        self.notify()
         del self.players[tok]
+        self.reindex_players()
+        self.notify()
 
     def get_projector_data(self, pov=None):
         players = [p.get_player_data() for tok, p in self.players.items()]
@@ -463,3 +473,36 @@ class GameHandler:
         self.state = 'running'
         self.notify()
         self.start_thread()
+
+    def kick_all(self):
+        if self.state != 'lobby':
+            return
+        for p in self.players.values():
+            p.kick()
+        # lazy double-notify
+        self.notify()
+        self.players = {}
+        self.notify()
+
+    def player_tok_from_index(self, index):
+        for tok, p in self.players.items():
+            if p.index == index:
+                return tok
+
+    def reindex_players(self):
+        for i, (tok, p) in enumerate(self.players.items()):
+            p.index = i
+
+    def kick_one(self, index):
+        if self.state != 'lobby':
+            return
+        tok = self.player_tok_from_index(index)
+        if tok is None:
+            return
+        p = self.players[tok]
+        p.kick()
+        # lazy double-notify
+        self.notify()
+        del self.players[tok]
+        self.reindex_players()
+        self.notify()

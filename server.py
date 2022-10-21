@@ -127,6 +127,14 @@ def register_player(gtok, ptok):
     player.set_sid(sid)
     sio.emit('new_player_state', player.get_phone_data())
 
+@sio.on('player_quit')
+def player_quit():
+    sid = flask.request.sid
+    if sid not in players:
+        return
+    player = players[sid]
+    player.quit()
+
 @sio.on('start_game')
 def start_game():
     sid = flask.request.sid
@@ -153,6 +161,28 @@ def place_tile(tilename, x, y):
         return
     player = players[sid]
     player.place_tile(tilename, x, y)
+
+@sio.on('reset_players')
+def reset_players():
+    sid = flask.request.sid
+    if sid not in projectors:
+        return
+    tok = projectors[sid]
+    if tok not in games:
+        return
+    game = games[tok]
+    game.kick_all()
+
+@sio.on('remove_player')
+def remove_player(player_index):
+    sid = flask.request.sid
+    if sid not in projectors:
+        return
+    tok = projectors[sid]
+    if tok not in games:
+        return
+    game = games[tok]
+    game.kick_one(player_index)
 
 if __name__ == '__main__':
     sio.run(app, host=host, port=port)
