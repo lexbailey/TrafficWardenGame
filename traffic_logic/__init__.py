@@ -44,6 +44,7 @@ class Cell:
         self.tile = None
         self.car = None
         self.tile_player = None
+        self.goal = None
 
     def set_car(self, car):
         self.car = car
@@ -57,12 +58,23 @@ class Cell:
     def is_free(self):
         return self.tile is None
 
+    def can_be_goal(self):
+        return self.goal is None
+
+    def set_goal(self, pid):
+        self.goal = pid
+
+    def clear_goal(self):
+        self.goal = None
+
 class Player:
     def __init__(self, index, color, pos):
         self.index = index
         self.color = color
         self.pos = pos
         self.cur_tiles = []
+        self.goal = None
+        self.score = 0
 
     def get_pos(self):
         return self.pos
@@ -88,7 +100,18 @@ class Player:
         return {
             'color': self.color,
             'tiles': self.cur_tiles,
+            'score': self.score,
         }
+
+    def assign_goal(self, xy):
+        self.goal = xy
+
+    def has_reached_goal(self):
+        cur_xy, _ = self.pos
+        return self.goal == cur_xy
+
+    def add_score(self, term):
+        self.score += term
 
 class TrafficWardenLogic:
     def __init__(self, n_players):
@@ -164,6 +187,10 @@ class TrafficWardenLogic:
             player.set_pos((newxy, newdir))
             newcell.set_car(player)
             oldcell.set_car(None)
+        if player.has_reached_goal():
+            player.add_score(1)
+            newcell.clear_goal()
+            self.assign_one_goal(player)
 
     def to_state(self, newstate, wait):
         self.last_state = self.state
@@ -188,8 +215,29 @@ class TrafficWardenLogic:
         for p in self.players:
             p.drain_tiles()
 
+    def assign_one_goal(self, p):
+        done = False
+        while not done:
+            cxy, dir_ = p.get_pos()
+            dx = random.randint(2, 6)
+            dy = 8 - dx
+            cx, cy = cxy
+            x, y = (cx + dx) % 10, (cy + dy) % 10
+            cell = self.grid[x][y]
+            if cell.can_be_goal():
+                p.assign_goal((x, y))
+                cell.set_goal(p.index)
+                done = True
+
+    def assign_initial_goals(self):
+        for p in self.players:
+            self.assign_one_goal(p)
+
     def step(self):
         if self.state == 'initial':
+            self.assign_initial_goals()
+            self.to_state('start_round', 0.5)
+        elif self.state == 'start_round':
             self.clear_tiles()
             self.to_state('assign_tiles', 2)
         elif self.state == 'assign_tiles':
@@ -211,7 +259,7 @@ class TrafficWardenLogic:
                     self.cur_player = 0
                 self.to_state('simulate', 1)
             else:
-                self.to_state('initial', 2)
+                self.to_state('start_round', 2)
 
     def get_wait(self):
         return self.wait
@@ -240,8 +288,21 @@ class TrafficWardenLogic:
                 if cell.car is not None:
                     player = cell.car.index
                     _, (player_dir, _) = cell.car.get_pos()
+
+                tile_placer = -1
+                if cell.tile_player is not None:
+                    tile_placer = cell.tile_player
+                goal = -1
+                if cell.goal is not None:
+                    goal = cell.goal
                 rcol.append(
-                    [dirname, player, player_dir]
+                    {
+                        'tile': dirname,
+                        'tile_placed_by': tile_placer,
+                        'car': player,
+                        'car_dir':  player_dir,
+                        'goal': goal,
+                    }
                 )
             rgrid.append(rcol)
         return rgrid
@@ -271,7 +332,14 @@ class PlayerHandler:
         return self.sid
 
     def get_player_data(self):
-        return {'name': self.name}
+        data = {'name': self.name, 'index': self.index}
+        game = self.game()
+        if game.game_logic is not None:
+            game_player = game.game_logic.get_player(self.index)
+            if game_player is not None:
+                data.update(game_player.get_data())
+        return data
+
 
     def rename(self, newname):
         game = self.game()
@@ -299,10 +367,6 @@ class PlayerHandler:
             return {}
         proj_data = game.get_projector_data(pov=self.index)
         player_data = self.get_player_data()
-        if game.game_logic is not None:
-            game_player = game.game_logic.get_player(self.index)
-            if game_player is not None:
-                player_data.update(game_player.get_data())
         return {'projector':proj_data, 'player':player_data}
 
     def notify(self):

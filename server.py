@@ -31,12 +31,10 @@ def root():
     return flask.render_template('index.html', is_in_game=is_in_game)
 
 def notify(tok):
-    print(f'notify {tok}')
     if tok not in games:
         return
     game = games[tok]
     for p in game.get_projectors():
-        print(f'notify {tok} projector: {p}')
         sio.emit('new_projector_state', game.get_projector_data(), to=p)
     for ptok, p in game.get_players().items():
         sid = p.get_sid()

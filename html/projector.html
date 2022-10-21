@@ -40,29 +40,40 @@
                 return rot;
             }
 
-            renderCell(c){
-                const tile_id = c[0];
-                const player_id = c[1];
-                const player_dir = c[2];
+            renderScores(players){
+                players.sort((a, b)=>b.score - a.score);
+                console.log(players);
+                return <div><h2>Leaderboard</h2>
+                    <ol>
+                        {players.map((p)=><li><img src={`static/images/car_${p.index}.svg`} width='20px'/>{p.name} <span style={ {fontWeight:'bold'} }>({p.score})</span></li>)}
+                    </ol>
+                </div>;
+            }
 
+            renderCell(c){
                 let car = '';
-                let tile= '';
-                if (player_id >= 0){
-                    let rot = this.get_angle(player_dir);
-                    car = <img src={`static/images/car_${player_id}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                let tile = '';
+                let goal = '';
+                if (c.car >= 0){
+                    let rot = this.get_angle(c.car_dir);
+                    car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
                 }
-                if (tile_id != ''){
-                    if (tile_id == '?'){
+                if (c.tile != ''){
+                    if (c.tile == '?'){
                         tile = <img src={'static/images/mystery_tile.svg'} style={ {position:'absolute'} }/>;
                     }
                     else{
-                        let rot = this.get_angle(tile_id);
-                        tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                        let rot = this.get_angle(c.tile);
+                        tile = <img src={`static/images/arrow_tile_${c.tile_placed_by}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
                     }
+                }
+                if (c.goal >= 0){
+                    goal = <img src={`static/images/goal_tile_${c.goal}.svg`} style={ {position:'absolute'} }/>;
                 }
                 return <div class='gridcell'>
                     {tile}
                     {car}
+                    {goal}
                 </div>
             }
 
@@ -119,6 +130,7 @@
                     return <div>
                         <h2>Game in progress</h2>
                         <p>{this.summary()}</p>
+                        {this.renderScores(this.state.proj.players)}
                         {this.renderGrid(this.state.proj.game.grid)}
                         <h3>Play order for this round</h3>
                         {this.renderPlayerOrder(this.state.proj.game.play_order)}

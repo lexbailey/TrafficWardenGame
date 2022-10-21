@@ -49,32 +49,39 @@
 
             selectCell(x, y){
                 console.log(`put ${this.state.local.selectedTile} in cell ${x},${y}`);
-                this.socket.emit('place_tile', this.state.local.selectedTile, x, y);
+                let tile = this.state.local.selectedTile;
+                if (tile != ''){
+                    this.socket.emit('place_tile', this.state.local.selectedTile, x, y);
+                }
+                let local = this.state.local;
+                local.selectedTile = '';
+                this.setState({local});
             }
 
             renderCell(c, x, y){
-                const tile_id = c[0];
-                const player_id = c[1];
-                const player_dir = c[2];
-
                 let car = '';
-                let tile= '';
-                if (player_id >= 0){
-                    let rot = this.get_angle(player_dir);
-                    car = <img src={`static/images/car_${player_id}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                let tile = '';
+                let goal = '';
+                if (c.car >= 0){
+                    let rot = this.get_angle(c.car_dir);
+                    car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
                 }
-                if (tile_id != ''){
-                    if (tile_id == '?'){
+                if (c.tile != ''){
+                    if (c.tile == '?'){
                         tile = <img src={'static/images/mystery_tile.svg'} style={ {position:'absolute'} }/>;
                     }
                     else{
-                        let rot = this.get_angle(tile_id);
-                        tile = <img src={'static/images/arrow_tile.svg'} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                        let rot = this.get_angle(c.tile);
+                        tile = <img src={`static/images/arrow_tile_${c.tile_placed_by}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
                     }
+                }
+                if (c.goal >= 0){
+                    goal = <img src={`static/images/goal_tile_${c.goal}.svg`} style={ {position:'absolute'} }/>;
                 }
                 return <div class='gridcell' onClick={()=>this.selectCell(x, y)}>
                     {tile}
                     {car}
+                    {goal}
                 </div>
             }
 
@@ -104,18 +111,18 @@
                 this.setState({local})
             }
 
-            renderTile(tile){
+            renderTile(tile, player){
                 let rot = this.get_angle(tile);
                 return <div class='tilebox'>
-                    <img src={'static/images/arrow_tile.svg'} style={ { transform:`rotate(${rot}deg)`} } onClick={()=>this.selectTile(tile)}/>
+                    <img src={`static/images/arrow_tile_${player}.svg`} style={ { transform:`rotate(${rot}deg)`} } onClick={()=>this.selectTile(tile)}/>
                 </div>;
             }
 
             renderTileSelection(tiles){
                 console.log(tiles);
                 return <div>
-                    { tiles.length>0?<p>Choose a tile</p>:'' }
-                    {tiles.map(this.renderTile)}
+                    { tiles.length>0?<p>Click to select a tile, click on grid to place tile. Place as many as you like.</p>:'' }
+                    {tiles.map(t=>this.renderTile(t, this.state.player.index))}
                 </div>;
             }
 
