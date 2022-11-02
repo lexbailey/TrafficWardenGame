@@ -12,8 +12,10 @@ import base64
 app = flask.Flask(__name__, template_folder='html')
 app.secret_key = secrets.token_bytes()
 
-host='192.168.1.16'
-port=5000
+config = json.load(open('config.json'))
+host=config.get('host', 'localhost')
+port=config.get('port', 8080)
+
 url_base = f'http://{host}:{port}'
 
 sio = SocketIO(app)
