@@ -235,7 +235,7 @@ class TrafficWardenLogic:
 
     def game_is_won(self):
         for p in self.players:
-            if p.score >= 1:
+            if p.score >= 5:
                 return True
 
     def step(self):

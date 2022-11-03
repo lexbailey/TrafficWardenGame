@@ -119,8 +119,8 @@ def register_projector(tok):
     sio.emit('newstate', game.get_projector_data())
 
     # Test code
-    game.player_join()
-    game.player_join()
+    #game.player_join()
+    #game.player_join()
 
 @sio.on('register_player')
 def register_player(gtok, ptok):
