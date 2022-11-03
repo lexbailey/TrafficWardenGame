@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import eventlet
 eventlet.monkey_patch()
 from traffic_logic import GameHandler, Dir
@@ -16,9 +17,10 @@ config = json.load(open('config.json'))
 host=config.get('host', 'localhost')
 port=config.get('port', 8080)
 
-url_base = f'http://{host}:{port}'
+internal_url_base = f'http://{host}:{port}'
+url_base = config.get('ext_url', internal_url_base)
 
-sio = SocketIO(app)
+sio = SocketIO(app, cors_allowed_origins=url_base)
 
 games = {}
 projectors = {}
