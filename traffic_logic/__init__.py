@@ -233,6 +233,11 @@ class TrafficWardenLogic:
         for p in self.players:
             self.assign_one_goal(p)
 
+    def game_is_won(self):
+        for p in self.players:
+            if p.score >= 1:
+                return True
+
     def step(self):
         if self.state == 'initial':
             self.assign_initial_goals()
@@ -259,7 +264,12 @@ class TrafficWardenLogic:
                     self.cur_player = 0
                 self.to_state('simulate', 1)
             else:
-                self.to_state('start_round', 2)
+                if self.game_is_won():
+                    self.to_state('won', 1)
+                else:
+                    self.to_state('start_round', 2)
+        elif self.state == 'won':
+            pass # Wait here until the game is reset
 
     def get_wait(self):
         return self.wait
@@ -450,6 +460,12 @@ class GameHandler:
                 'players': players,
                 'game': self.game_logic.get_projector_render_data(pov=pov)
             }
+        if self.state == 'game_over':
+            return {
+                'state': self.state,
+                'players': players,
+                'game': self.game_logic.get_projector_render_data(pov=pov)
+            }
         return {
             'state': 'error'
         }
@@ -458,7 +474,11 @@ class GameHandler:
         while not self.stop_thread.is_set():
             eventlet.sleep(self.game_logic.get_wait())
             self.game_logic.step()
+            if self.game_logic.state == 'won':
+                self.state = 'game_over'
             self.notify()
+            if self.state == 'game_over':
+                break
 
     def start_thread(self):
         self.stop_thread = threading.Event()
@@ -482,6 +502,13 @@ class GameHandler:
         # lazy double-notify
         self.notify()
         self.players = {}
+        self.notify()
+
+    def return_to_lobby(self):
+        if self.state != 'game_over':
+            return
+        self.state = 'lobby'
+        self.game_logic = None
         self.notify()
 
     def player_tok_from_index(self, index):

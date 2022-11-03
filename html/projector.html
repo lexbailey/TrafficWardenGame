@@ -40,7 +40,7 @@
                 return rot;
             }
 
-            renderScores(players){
+            renderScores(players, is_final){
                 players.sort((a, b)=>b.score - a.score);
                 console.log(players);
                 return <div><h2>Leaderboard</h2>
@@ -125,18 +125,26 @@
                         {Object.keys(this.state.proj.players).length < 2?<p>Add more players! (At least two players required to start game)</p>:''}
                         <h2>Controls</h2>
                         <button disabled={Object.keys(this.state.proj.players).length < 2} onClick={()=>{console.log('foo');this.socket.emit('start_game')}}>Start game</button>
-                        <button onClick={()=>{console.log('foo');this.socket.emit('reset_players')}}>Reset (Remove all players)</button>
+                        <button onClick={()=>{this.socket.emit('reset_players')}}>Reset (Remove all players)</button>
                     </div>;
                 }
                 else if (this.state.proj.state == 'running') {
                     return <div>
                         <h2>Game in progress</h2>
                         <p>{this.summary()}</p>
-                        {this.renderScores(this.state.proj.players)}
+                        {this.renderScores(this.state.proj.players, false)}
                         {this.renderGrid(this.state.proj.game.grid)}
                         <h3>Play order for this round</h3>
                         {this.renderPlayerOrder(this.state.proj.game.play_order)}
                     </div>
+                }
+                else if (this.state.proj.state == 'game_over') {
+                    return <div>
+                        <h2>We have a winner!</h2>
+                        {this.renderScores(this.state.proj.players, true)}
+                        <button onClick={()=>{this.socket.emit('to_lobby')}}>Back to lobby</button>
+                    </div>;
+
                 }
                 else{
                     return <div><p>Error, game is in unknown state</p></div>

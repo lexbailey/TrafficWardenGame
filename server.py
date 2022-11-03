@@ -20,6 +20,9 @@ port=config.get('port', 8080)
 internal_url_base = f'http://{host}:{port}'
 url_base = config.get('ext_url', internal_url_base)
 
+print(f'Listening via {internal_url_base}')
+print(f'Accesible via {url_base}')
+
 sio = SocketIO(app, cors_allowed_origins=url_base)
 
 games = {}
@@ -176,6 +179,17 @@ def reset_players():
         return
     game = games[tok]
     game.kick_all()
+
+@sio.on('to_lobby')
+def to_lobby():
+    sid = flask.request.sid
+    if sid not in projectors:
+        return
+    tok = projectors[sid]
+    if tok not in games:
+        return
+    game = games[tok]
+    game.return_to_lobby()
 
 @sio.on('remove_player')
 def remove_player(player_index):

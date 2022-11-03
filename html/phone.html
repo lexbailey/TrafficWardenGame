@@ -154,6 +154,9 @@
                         {this.renderGrid(this.state.proj.game.grid)}
                     </div>
                 }
+                else if (this.state.proj.state == 'game_over') {
+                    return <div><h2>Game complete</h2><p>The game has ended, look at the big screen to see who won! You can wait here to join the next game.</p></div>
+                }
                 else{
                     return <div><p>Error, game is in unknown state</p></div>
                 }
