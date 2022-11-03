@@ -2,14 +2,62 @@
 <html>
     <head>
         <title>Traffic Warden game</title>
+        <meta name="viewport" content="width=730px, initial-scale=1.0">
         <script src="static/babel/babel.min.js"></script>
         <script src="static/react/react.production.min.js"></script>
         <script src="static/react/react-dom.production.min.js"></script>
         <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
         <style>
-            .gridcell{
-                border: 1px solid black;
+            @font-face {
+              font-family: "kanit";
+              src: url("static/font/Kanit/Kanit-Regular.ttf");
             }
+
+            @font-face {
+              font-family: "kanit";
+              src: url("static/font/Kanit/Kanit-Bold.ttf");
+              font-weight: bold;
+            }
+
+            body{
+              background-color: #313131;
+              color: white;
+                font-family:"kanit";
+            }
+
+            .content_right {
+              float: left;
+            }
+
+            .content_left {
+              float: left;
+              margin-right: 100px;
+            }
+
+            .gridcell{
+                border: 1px solid white;
+            }
+
+            .nameoverlay{
+                position:absolute;
+                max-width:70px;
+                background-color: #313131b8;
+                overflow: hidden;
+                white-space: nowrap;
+                margin:0;
+            }
+
+            .nameoverlay_car{
+            }
+
+            .nameoverlay_goal{
+                margin-top: calc(70px - 23px);
+            }
+
+            .nameoverlay_tile{
+                margin-top: calc(70px - 23px);
+            }
+
             .tilebox{
                 padding-right: 10px;
                 display: inline-block;
@@ -58,13 +106,18 @@
                 this.setState({local});
             }
 
-            renderCell(c, x, y){
+            renderCell(c, players, x, y){
                 let car = '';
+                let carname = '';
                 let tile = '';
+                let tilename = '';
                 let goal = '';
+                let goalname = '';
                 if (c.car >= 0){
                     let rot = this.get_angle(c.car_dir);
                     car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                    console.log(c);
+                    carname = <p class='nameoverlay nameoverlay_car'>{players[c.car].name}</p>
                 }
                 if (c.tile != ''){
                     if (c.tile == '?'){
@@ -73,19 +126,24 @@
                     else{
                         let rot = this.get_angle(c.tile);
                         tile = <img src={`static/images/arrow_tile_${c.tile_placed_by}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                        tilename = <p class='nameoverlay nameoverlay_tile'>{players[c.tile_placed_by].name}</p>
                     }
                 }
                 if (c.goal >= 0){
                     goal = <img src={`static/images/goal_tile_${c.goal}.svg`} style={ {position:'absolute'} }/>;
+                    goalname = <p class='nameoverlay nameoverlay_goal'>{players[c.goal].name}</p>
                 }
                 return <div class='gridcell' onClick={()=>this.selectCell(x, y)}>
                     {tile}
                     {car}
                     {goal}
+                    {tilename}
+                    {carname}
+                    {goalname}
                 </div>
             }
 
-            renderGrid(grid){
+            renderGrid(grid, players){
                 return <div style={ {
                         display:'grid', gridTemplateColumns:'repeat(10, 72px)',
                         gridTemplateRows: 'repeat(10, 72px)'
@@ -95,7 +153,7 @@
                             var parts = [];
                             for (var y = 9; y >= 0; y--){
                                 for (var x = 0; x <= 9; x++){
-                                    parts.push(this.renderCell(grid[x][y], x, y));
+                                    parts.push(this.renderCell(grid[x][y], players, x, y));
                                 }
                             }
                             return parts;
@@ -151,7 +209,7 @@
                     return <div>
                         <h2>Game in progress</h2>
                         {this.renderTileSelection(this.state.player.tiles)}
-                        {this.renderGrid(this.state.proj.game.grid)}
+                        {this.renderGrid(this.state.proj.game.grid, this.state.proj.players)}
                     </div>
                 }
                 else if (this.state.proj.state == 'game_over') {

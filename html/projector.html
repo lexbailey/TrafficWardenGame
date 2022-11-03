@@ -7,8 +7,55 @@
         <script src="static/react/react-dom.production.min.js"></script>
         <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
         <style>
+
+            @font-face {
+              font-family: "kanit";
+              src: url("static/font/Kanit/Kanit-Regular.ttf");
+            }
+
+            @font-face {
+              font-family: "kanit";
+              src: url("static/font/Kanit/Kanit-Bold.ttf");
+              font-weight: bold;
+            }
+
+            body{
+              background-color: #313131;
+              color: white;
+                font-family:"kanit";
+            }
+
+            .content_right {
+              float: left;
+            }
+
+            .content_left {
+              float: left;
+              margin-right: 100px;
+            }
+
             .gridcell{
-                border: 1px solid black;
+                border: 1px solid white;
+            }
+
+            .nameoverlay{
+                position:absolute;
+                max-width:70px;
+                background-color: #313131b8;
+                overflow: hidden;
+                white-space: nowrap;
+                margin:0;
+            }
+
+            .nameoverlay_car{
+            }
+
+            .nameoverlay_goal{
+                margin-top: calc(70px - 23px);
+            }
+
+            .nameoverlay_tile{
+                margin-top: calc(70px - 23px);
             }
         </style>
     </head>
@@ -43,20 +90,25 @@
             renderScores(players, is_final){
                 players.sort((a, b)=>b.score - a.score);
                 console.log(players);
-                return <div><h2>Leaderboard</h2>
+                return <div>
                     <ol>
                         {players.map((p)=><li><img src={`static/images/car_${p.index}.svg`} width='20px'/>{p.name} <span style={ {fontWeight:'bold'} }>({p.score})</span></li>)}
                     </ol>
                 </div>;
             }
 
-            renderCell(c){
+            renderCell(c, players){
                 let car = '';
+                let carname = '';
                 let tile = '';
+                let tilename = '';
                 let goal = '';
+                let goalname = '';
                 if (c.car >= 0){
                     let rot = this.get_angle(c.car_dir);
                     car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                    console.log(c);
+                    carname = <p class='nameoverlay nameoverlay_car'>{players[c.car].name}</p>
                 }
                 if (c.tile != ''){
                     if (c.tile == '?'){
@@ -65,19 +117,24 @@
                     else{
                         let rot = this.get_angle(c.tile);
                         tile = <img src={`static/images/arrow_tile_${c.tile_placed_by}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
+                        tilename = <p class='nameoverlay nameoverlay_tile'>{players[c.tile_placed_by].name}</p>
                     }
                 }
                 if (c.goal >= 0){
                     goal = <img src={`static/images/goal_tile_${c.goal}.svg`} style={ {position:'absolute'} }/>;
+                    goalname = <p class='nameoverlay nameoverlay_goal'>{players[c.goal].name}</p>
                 }
                 return <div class='gridcell'>
                     {tile}
                     {car}
                     {goal}
+                    {tilename}
+                    {carname}
+                    {goalname}
                 </div>
             }
 
-            renderGrid(grid){
+            renderGrid(grid, players){
                 return <div style={ {
                         display:'grid', gridTemplateColumns:'repeat(10, 72px)',
                         gridTemplateRows: 'repeat(10, 72px)'
@@ -87,7 +144,7 @@
                             var parts = [];
                             for (var y = 9; y >= 0; y--){
                                 for (var x = 0; x <= 9; x++){
-                                    parts.push(this.renderCell(grid[x][y]));
+                                    parts.push(this.renderCell(grid[x][y], players));
                                 }
                             }
                             return parts;
@@ -114,28 +171,37 @@
             render(){
                 if (this.state.proj.state == 'lobby') {
                     return <div>
-                        <h2>Game lobby</h2>
-                        <p>Join the game here: {this.props.join_url}</p>
-                        <p>or scan this qr code</p>
-                        <img src={this.props.qrdata}/>
-                        <h2>Players ({Object.keys(this.state.proj.players).length})</h2>
-                        <ul>
-                        {Object.entries(this.state.proj.players).map(e=><li>{e[1].name}<img title={`click to remove ${e[1].name} from the game`} alt={`click to remove ${e[1].name} from the game`} src='static/images/remove_player.svg' onClick={()=>{this.socket.emit('remove_player', e[1].index)}} /></li>) }
-                        </ul>
-                        {Object.keys(this.state.proj.players).length < 2?<p>Add more players! (At least two players required to start game)</p>:''}
-                        <h2>Controls</h2>
-                        <button disabled={Object.keys(this.state.proj.players).length < 2} onClick={()=>{console.log('foo');this.socket.emit('start_game')}}>Start game</button>
-                        <button onClick={()=>{this.socket.emit('reset_players')}}>Reset (Remove all players)</button>
+                        <div class='content_left'>
+                            <h2>Game lobby</h2>
+                            <p>Join the game here: {this.props.join_url}</p>
+                            <p>or scan this qr code</p>
+                            <img src={this.props.qrdata}/>
+                        </div>
+                        <div class='content_right'>
+                            <h2>Players ({Object.keys(this.state.proj.players).length})</h2>
+                            <ul>
+                            {Object.entries(this.state.proj.players).map(e=><li><img title={`click to remove ${e[1].name} from the game`} alt={`click to remove ${e[1].name} from the game`} src='static/images/remove_player.svg' onClick={()=>{this.socket.emit('remove_player', e[1].index)}} />{e[1].name}</li>) }
+                            </ul>
+                            {Object.keys(this.state.proj.players).length < 2?<p>Add more players! (At least two players required to start game)</p>:''}
+                            <h2>Controls</h2>
+                            <div><button disabled={Object.keys(this.state.proj.players).length < 2} onClick={()=>{this.socket.emit('start_game')}}>Start game</button></div>
+                            <div><button onClick={()=>{this.socket.emit('reset_players')}}>Reset (Remove all players)</button></div>
+                        </div>
                     </div>;
                 }
                 else if (this.state.proj.state == 'running') {
                     return <div>
-                        <h2>Game in progress</h2>
-                        <p>{this.summary()}</p>
-                        {this.renderScores(this.state.proj.players, false)}
-                        {this.renderGrid(this.state.proj.game.grid)}
-                        <h3>Play order for this round</h3>
-                        {this.renderPlayerOrder(this.state.proj.game.play_order)}
+                        <div class='content_left'>
+                            <h2>Game in progress</h2>
+                            <p>{this.summary()}</p>
+                            {this.renderGrid(this.state.proj.game.grid, this.state.proj.players)}
+                        </div>
+                        <div class='content_right'>
+                            <h3>Leaderboard</h3>
+                            {this.renderScores(this.state.proj.players, false)}
+                            <h3>Play order for this round</h3>
+                            {this.renderPlayerOrder(this.state.proj.game.play_order)}
+                        </div>
                     </div>
                 }
                 else if (this.state.proj.state == 'game_over') {
