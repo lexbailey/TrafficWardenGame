@@ -7,7 +7,7 @@
    viewBox="0 0 18.520833 18.520833"
    version="1.1"
    id="svg5"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
+   inkscape:version="1.2 (dc2aeda, 2022-05-15)"
    sodipodi:docname="car_base.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,12 +25,12 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="7.319248"
-     inkscape:cx="25.275821"
-     inkscape:cy="29.033037"
-     inkscape:window-width="1499"
-     inkscape:window-height="1236"
-     inkscape:window-x="1421"
-     inkscape:window-y="84"
+     inkscape:cx="26.983646"
+     inkscape:cy="36.069279"
+     inkscape:window-width="1440"
+     inkscape:window-height="758"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -41,7 +41,7 @@
      id="layer1">
     <g
        id="g2257"
-       transform="matrix(0,0.46352984,-0.47565117,0,17.151599,5.4173662)">
+       transform="matrix(0,0.40046,-0.47410644,0,17.097528,6.364383)">
       <path
          id="rect234"
          style="fill:#00ff00;stroke-width:8.57303;stroke-linejoin:round"
@@ -50,14 +50,14 @@
       <ellipse
          style="fill:#00ff00;stroke-width:8.57303;stroke-linejoin:round"
          id="path294"
-         cx="19.378128"
+         cx="17.094925"
          cy="25.342907"
          rx="3.8786902"
          ry="4.0844107" />
       <ellipse
          style="fill:#00ff00;stroke-width:8.57303;stroke-linejoin:round"
          id="path294-3"
-         cx="19.425484"
+         cx="17.142281"
          cy="5.4389153"
          rx="3.8786902"
          ry="4.0844107" />

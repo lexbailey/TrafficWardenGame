@@ -7,7 +7,7 @@
    viewBox="0 0 18.520833 18.520833"
    version="1.1"
    id="svg6751"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
+   inkscape:version="1.2 (dc2aeda, 2022-05-15)"
    sodipodi:docname="goal_tile_base.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,12 +25,12 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="7.319248"
-     inkscape:cx="34.429767"
-     inkscape:cy="18.786083"
-     inkscape:window-width="1499"
-     inkscape:window-height="1236"
-     inkscape:window-x="1409"
-     inkscape:window-y="130"
+     inkscape:cx="33.131819"
+     inkscape:cy="34.156514"
+     inkscape:window-width="1440"
+     inkscape:window-height="758"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -63,10 +63,10 @@
      inkscape:groupmode="layer"
      id="layer1">
     <circle
-       style="fill:#00ff00;stroke-width:8.95687;stroke-linejoin:round"
+       style="fill:#00ff00;stroke-width:7.66174;stroke-linejoin:round"
        id="path403"
        cx="9.260417"
        cy="9.260417"
-       r="6" />
+       r="5.1324244" />
   </g>
 </svg>
