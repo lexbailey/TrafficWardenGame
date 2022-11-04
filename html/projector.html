@@ -112,6 +112,7 @@
             }
 
             render(){
+                console.log(this.state.proj.state);
                 if (this.state.proj.state == 'lobby') {
                     return <div>
                         <div class='content_left'>
@@ -163,6 +164,9 @@
                         <button onClick={()=>{this.socket.emit('to_lobby')}}>Back to lobby</button>
                     </div>;
 
+                }
+                else if (this.state.proj.state == 'ended') {
+                    return <div><p>The game has been ended by the server. This usually only happens when there's no activity for a long time.</p></div>
                 }
                 else{
                     return <div><p>Error, game is in unknown state</p></div>

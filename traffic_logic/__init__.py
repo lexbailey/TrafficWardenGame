@@ -367,6 +367,7 @@ class PlayerHandler:
     def rename(self, newname):
         game = self.game()
         if game is not None:
+            game.polled()
             if game.get_state() != 'lobby':
                 return # Can only do this action in the lobby
             self.name = newname
@@ -398,6 +399,7 @@ class PlayerHandler:
         self.game().notify()
 
     def place_tile(self, dir_, x, y):
+        self.game().polled()
         logic = self.get_game_logic()
         player = self.get_logical_player()
         if logic is not None:
@@ -413,9 +415,19 @@ class GameHandler:
         self.state = 'lobby'
         self.game_logic = None
         self.players = {}
-        self.notify = callback
+        self.callback = callback
         self.projectors = []
         self.thread_starter = thread_starter
+        self.polled()
+
+    def polled(self):
+        self.last_polled_at = time.time()
+        print(self.last_polled_at)
+
+    def notify(self):
+        if time.time() - self.last_polled_at > (60*15): # fifteen minutes with no activity means game gets killed
+            self.end()
+        self.callback()
 
     def get_state(self):
         return self.state
@@ -425,8 +437,10 @@ class GameHandler:
 
     def add_projector(self, sid):
         self.projectors.append(sid)
+        self.polled()
 
     def player_join(self):
+        self.polled()
         if self.state != 'lobby':
             return # Can only do this action in the lobby
         n = len(self.players)
@@ -444,6 +458,7 @@ class GameHandler:
         return self.players
 
     def player_quit(self, tok):
+        self.polled()
         if self.state != 'lobby':
             return # Can only do this action in the lobby
         if tok not in self.players:
@@ -471,6 +486,11 @@ class GameHandler:
                 'players': players,
                 'game': self.game_logic.get_projector_render_data(pov=pov)
             }
+        if self.state == 'ended':
+            return {
+                'state': self.state,
+                'players': [],
+            }
         return {
             'state': 'error'
         }
@@ -490,6 +510,7 @@ class GameHandler:
         self.thread = self.thread_starter(self.thread_func)
 
     def start(self):
+        self.polled()
         if self.state != 'lobby':
             return
         if len(self.players) < 2:
@@ -499,7 +520,14 @@ class GameHandler:
         self.notify()
         self.start_thread()
 
+    def end(self):
+        self.stop_thread.set()
+        for p in self.players.values():
+            p.kick()
+        self.state = 'ended'
+
     def kick_all(self):
+        self.polled()
         if self.state != 'lobby':
             return
         for p in self.players.values():
@@ -510,6 +538,7 @@ class GameHandler:
         self.notify()
 
     def return_to_lobby(self):
+        self.polled()
         if self.state != 'game_over':
             return
         self.state = 'lobby'
@@ -526,6 +555,7 @@ class GameHandler:
             p.index = i
 
     def kick_one(self, index):
+        self.polled()
         if self.state != 'lobby':
             return
         tok = self.player_tok_from_index(index)

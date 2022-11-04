@@ -47,6 +47,8 @@ def notify(tok):
         sid = p.get_sid()
         if sid is not None:
             sio.emit('new_player_state', p.get_phone_data(), to=sid)
+    if game.state == 'ended':
+        del games[tok]
 
 def join_info(tok):
     join_url = f'{url_base}/join/{tok}'
