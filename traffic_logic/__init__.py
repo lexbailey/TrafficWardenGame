@@ -56,7 +56,10 @@ class Cell:
         self.tile_player = p
 
     def is_free(self):
-        return self.tile is None
+        return self.tile is None and self.car is None
+
+    def is_placeable_by(self, p):
+        return self.is_free() or self.car.index == p
 
     def can_be_goal(self):
         return self.goal is None
@@ -398,11 +401,10 @@ class PlayerHandler:
         logic = self.get_game_logic()
         player = self.get_logical_player()
         if logic is not None:
-            if logic.get_cell((x, y)).is_free():
-                if player.can_place(dir_):
-                    player.use_tile(dir_)
-                    logic.put_tile((x, y), Dir.from_name(dir_), self.index)
-                    self.notify()
+            if logic.get_cell((x, y)).is_placeable_by(self.index) and player.can_place(dir_):
+                player.use_tile(dir_)
+                logic.put_tile((x, y), Dir.from_name(dir_), self.index)
+                self.notify()
 
 class GameHandler:
     MAX_PLAYERS = 8
