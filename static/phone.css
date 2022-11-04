@@ -1,0 +1,38 @@
+.cellimg{
+    width: 72px;
+    margin: 3px;
+}
+
+.cellimg.selected{
+    border: 3px solid #20b2aa;
+    margin: 0;
+}
+
+@media screen and (orientation:portrait), @media screen and (max-width: 720px) {
+    body{
+        margin:0;
+    }
+    .gridcontainer{
+        grid-template-columns: repeat(10, 10vw);
+        grid-template-rows: repeat(10, 10vw);
+    }
+    .gridcell>img{
+        width: 10vw;
+    }
+
+    .cellimg{
+        width: 10vw;
+    }
+
+    .nameoverlay{
+        max-width: 10vw;
+        font-size: 2vw;
+    }
+
+    .nameoverlay_goal{
+        margin-top: 6.5vw;
+    }
+    .nameoverlay_tile{
+        margin-top: 6.5vw;
+    }
+}

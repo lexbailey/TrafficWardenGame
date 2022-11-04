@@ -2,62 +2,14 @@
 <html>
     <head>
         <title>Traffic Warden game</title>
-        <meta name="viewport" content="width=730px, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="static/babel/babel.min.js"></script>
         <script src="static/react/react.production.min.js"></script>
         <script src="static/react/react-dom.production.min.js"></script>
         <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
+        <link rel="stylesheet" href="static/style.css"/>
+        <link rel="stylesheet" href="static/phone.css"/>
         <style>
-            @font-face {
-              font-family: "kanit";
-              src: url("static/font/Kanit/Kanit-Regular.ttf");
-            }
-
-            @font-face {
-              font-family: "kanit";
-              src: url("static/font/Kanit/Kanit-Bold.ttf");
-              font-weight: bold;
-            }
-
-            body{
-              background-color: #313131;
-              color: white;
-                font-family:"kanit";
-            }
-
-            .content_right {
-              float: left;
-            }
-
-            .content_left {
-              float: left;
-              margin-right: 100px;
-            }
-
-            .gridcell{
-                border: 1px solid white;
-            }
-
-            .nameoverlay{
-                position:absolute;
-                max-width:70px;
-                background-color: #313131b8;
-                overflow: hidden;
-                white-space: nowrap;
-                margin:0;
-            }
-
-            .nameoverlay_car{
-            }
-
-            .nameoverlay_goal{
-                margin-top: calc(70px - 23px);
-            }
-
-            .nameoverlay_tile{
-                margin-top: calc(70px - 23px);
-            }
-
             .tilebox{
                 padding-right: 10px;
                 display: inline-block;
@@ -72,11 +24,15 @@
         class Game extends React.Component {
             constructor(props){
                 super(props);
-                this.state = { local: {selectedTile: '', is_kicked:false}, proj: {state:'lobby', players:{}} }
+                this.state = { local: {selectedTile: '', selectedIndex:-1, is_kicked:false}, proj: {state:'lobby', players:{}} }
                 var socket = io();
                 socket.on('new_player_state', (state)=>{
-                    console.log(state);
-                    this.setState({proj: state.projector, player: state.player});
+                    let local = this.state.local;
+                    if ('game' in state.projector && state.projector.game.last_state != 'assign_tiles' && state.projector.game.cur_state == 'assign_tiles'){
+                        local.selectedTile='';
+                        local.selectedIndex=-1;
+                    }
+                    this.setState({proj: state.projector, player: state.player, local});
                 });
                 socket.emit('register_player', this.props.gtok, this.props.ptok);
 
@@ -96,13 +52,13 @@
             }
 
             selectCell(x, y){
-                console.log(`put ${this.state.local.selectedTile} in cell ${x},${y}`);
                 let tile = this.state.local.selectedTile;
                 if (tile != ''){
                     this.socket.emit('place_tile', this.state.local.selectedTile, x, y);
                 }
                 let local = this.state.local;
                 local.selectedTile = '';
+                local.selectedIndex = -1;
                 this.setState({local});
             }
 
@@ -116,7 +72,6 @@
                 if (c.car >= 0){
                     let rot = this.get_angle(c.car_dir);
                     car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
-                    console.log(c);
                     carname = <p class='nameoverlay nameoverlay_car'>{players[c.car].name}</p>
                 }
                 if (c.tile != ''){
@@ -144,10 +99,7 @@
             }
 
             renderGrid(grid, players){
-                return <div style={ {
-                        display:'grid', gridTemplateColumns:'repeat(10, 72px)',
-                        gridTemplateRows: 'repeat(10, 72px)'
-                    } }>
+                return <div class="gridcontainer">
                     {
                         (()=>{
                             var parts = [];
@@ -162,25 +114,24 @@
                 </div>
             }
 
-            selectTile(tile){
-                console.log('select', tile);
+            selectTile(tile, index){
                 let local = this.state.local
                 local.selectedTile = tile
+                local.selectedIndex = index
                 this.setState({local})
             }
 
-            renderTile(tile, player){
+            renderTile(tile, player, index){
                 let rot = this.get_angle(tile);
                 return <div class='tilebox'>
-                    <img src={`static/images/arrow_tile_${player}.svg`} style={ { transform:`rotate(${rot}deg)`} } onClick={()=>this.selectTile(tile)}/>
+                    <img class={'cellimg' + (this.state.local.selectedIndex == index?' selected':'')} src={`static/images/arrow_tile_${player}.svg`} style={ { transform:`rotate(${rot}deg)`} } onClick={()=>this.selectTile(tile, index)}/>
                 </div>;
             }
 
             renderTileSelection(tiles){
-                console.log(tiles);
                 return <div>
                     { tiles.length>0?<p>Click to select a tile, click on grid to place tile. Place as many as you like.</p>:'' }
-                    {tiles.map(t=>this.renderTile(t, this.state.player.index))}
+                    {tiles.map((t,i)=>this.renderTile(t, this.state.player.index, i))}
                 </div>;
             }
 
@@ -207,9 +158,8 @@
                 }
                 else if (this.state.proj.state == 'running') {
                     return <div>
-                        <h2>Game in progress</h2>
-                        {this.renderTileSelection(this.state.player.tiles)}
                         {this.renderGrid(this.state.proj.game.grid, this.state.proj.players)}
+                        {this.renderTileSelection(this.state.player.tiles)}
                     </div>
                 }
                 else if (this.state.proj.state == 'game_over') {

@@ -2,62 +2,12 @@
 <html>
     <head>
         <title>Traffic Warden game</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="static/babel/babel.min.js"></script>
         <script src="static/react/react.production.min.js"></script>
         <script src="static/react/react-dom.production.min.js"></script>
         <script src="static/socket.io-4.5.3/client-dist/socket.io.min.js"></script>
-        <style>
-
-            @font-face {
-              font-family: "kanit";
-              src: url("static/font/Kanit/Kanit-Regular.ttf");
-            }
-
-            @font-face {
-              font-family: "kanit";
-              src: url("static/font/Kanit/Kanit-Bold.ttf");
-              font-weight: bold;
-            }
-
-            body{
-              background-color: #313131;
-              color: white;
-                font-family:"kanit";
-            }
-
-            .content_right {
-              float: left;
-            }
-
-            .content_left {
-              float: left;
-              margin-right: 100px;
-            }
-
-            .gridcell{
-                border: 1px solid white;
-            }
-
-            .nameoverlay{
-                position:absolute;
-                max-width:70px;
-                background-color: #313131b8;
-                overflow: hidden;
-                white-space: nowrap;
-                margin:0;
-            }
-
-            .nameoverlay_car{
-            }
-
-            .nameoverlay_goal{
-                margin-top: calc(70px - 23px);
-            }
-
-            .nameoverlay_tile{
-                margin-top: calc(70px - 23px);
-            }
-        </style>
+        <link rel="stylesheet" href="static/style.css"/>
     </head>
     <body>
         <h1>Traffic Warden game</h1>
@@ -71,7 +21,6 @@
                 this.state = { proj: {state:'lobby', players:{}} }
                 var socket = io();
                 socket.on('new_projector_state', (state)=>{
-                    console.log(state);
                     this.setState({proj: state});
                 });
                 socket.emit('register_projector', '{{tok}}');
@@ -89,7 +38,6 @@
 
             renderScores(players, is_final){
                 players.sort((a, b)=>b.score - a.score);
-                console.log(players);
                 return <div>
                     <ol>
                         {players.map((p)=><li><img src={`static/images/car_${p.index}.svg`} width='20px'/>{p.name} <span style={ {fontWeight:'bold'} }>({p.score})</span></li>)}
@@ -107,7 +55,6 @@
                 if (c.car >= 0){
                     let rot = this.get_angle(c.car_dir);
                     car = <img src={`static/images/car_${c.car}.svg`} style={ {position:'absolute', transform:`rotate(${rot}deg)`} }/>;
-                    console.log(c);
                     carname = <p class='nameoverlay nameoverlay_car'>{players[c.car].name}</p>
                 }
                 if (c.tile != ''){
@@ -135,10 +82,7 @@
             }
 
             renderGrid(grid, players){
-                return <div style={ {
-                        display:'grid', gridTemplateColumns:'repeat(10, 72px)',
-                        gridTemplateRows: 'repeat(10, 72px)'
-                    } }>
+                return <div class="gridcontainer" >
                     {
                         (()=>{
                             var parts = [];
@@ -161,7 +105,6 @@
 
             summary(){
                 let st = this.state.proj.game.cur_state;
-                console.log(st);
                 if (st == 'inital') {return 'Ready to begin';}
                 if (st == 'assign_cards') {return 'You\'re getting new direction tiles now...';}
                 if (st == 'await_play') {return 'Look at your phone! Quick, place some tiles!';}
@@ -173,7 +116,16 @@
                     return <div>
                         <div class='content_left'>
                             <h2>Game lobby</h2>
-                            <p>Join the game here: {this.props.join_url}</p>
+                            <p>Join the game here: {this.props.join_url} <button onClick={(e)=>{
+                                try{
+                                    navigator.clipboard.writeText(this.props.join_url);
+                                    e.target.innerText = "Copied";
+                                }
+                                catch (err){
+                                    e.target.innerText = "Error";
+                                    e.target.disabled = true;
+                                }
+                            }}>Copy link</button></p>
                             <p>or scan this qr code</p>
                             <img src={this.props.qrdata}/>
                         </div>

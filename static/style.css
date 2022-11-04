@@ -1,0 +1,59 @@
+@font-face {
+  font-family: "kanit";
+  src: url("/static/font/Kanit/Kanit-Regular.ttf");
+}
+
+@font-face {
+  font-family: "kanit";
+  src: url("/static/font/Kanit/Kanit-Bold.ttf");
+  font-weight: bold;
+}
+
+body{
+  background-color: #313131;
+  color: white;
+    font-family:"kanit";
+}
+
+a, a:visited{
+    color:#20b2aa;
+}
+
+.content_right {
+  float: left;
+}
+
+.content_left {
+  float: left;
+  margin-right: 100px;
+}
+
+.gridcontainer{
+    display: grid;
+    grid-template-columns: repeat(10, 72px);
+    grid-template-rows: repeat(10, 72px);
+}
+
+.gridcell{
+    border: 1px solid white;
+}
+
+.nameoverlay{
+    position:absolute;
+    max-width:70px;
+    background-color: #313131b8;
+    overflow: hidden;
+    white-space: nowrap;
+    margin:0;
+}
+
+.nameoverlay_car{
+}
+
+.nameoverlay_goal{
+    margin-top: calc(70px - 23px);
+}
+
+.nameoverlay_tile{
+    margin-top: calc(70px - 23px);
+}
