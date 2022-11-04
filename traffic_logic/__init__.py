@@ -170,7 +170,7 @@ class TrafficWardenLogic:
         dirname, dirfun = newdir
         newxy = Dir.clamp(dirfun(xy), 9)
         if newxy == xy:
-            newdir = Dir.reflect(dir_)
+            newdir = Dir.reflect(newdir)
             dirname, dirfun = newdir
             newxy = Dir.clamp(dirfun(xy), 9)
         oldcell = self.get_cell(xy)
@@ -180,13 +180,16 @@ class TrafficWardenLogic:
             newcell.set_car(player)
             oldcell.set_car(None)
         else:
-            newdir = Dir.reflect(dir_)
+            newdir = Dir.reflect(newdir)
             dirname, dirfun = newdir
             newxy = Dir.clamp(dirfun(xy), 9)
             newcell = self.get_cell(newxy)
-            player.set_pos((newxy, newdir))
-            newcell.set_car(player)
-            oldcell.set_car(None)
+            if newcell.car is None:
+                player.set_pos((newxy, newdir))
+                newcell.set_car(player)
+                oldcell.set_car(None)
+        if newcell.tile is not None:
+            player.set_pos((newxy, newcell.tile))
         if player.has_reached_goal():
             player.add_score(1)
             newcell.clear_goal()
