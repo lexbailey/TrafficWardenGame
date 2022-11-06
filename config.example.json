@@ -1,0 +1,6 @@
+{
+    "host":"localhost",
+    "port":5000,
+    "ext_url":"https://example.com",
+    "show_stats":false
+}
