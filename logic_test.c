@@ -1,3 +1,17 @@
+/*
+
+This is a model of the car movement logic
+The model can be checked with CBMC:
+
+    cbmc logic_test.c --trace
+
+I used this to find the bug in the logic where a car would sometimes move without updating the grid state.
+Perhaps I should have chosen a different representation, where there was only one source of truth
+instead I chose to use FM, because I'm a FM person :)
+
+anyway, leaving this here in case I need it again later
+
+*/
 #include <stdio.h>
 
 
