@@ -4,6 +4,12 @@ I wrote this game as a demo for a talk I was invited to give at DevSoc (The Univ
 
 It's a real time online multiplayer game. Similar in style to jackbox games it is played by lots of people in one room on mobile phones, along with a main view normally displayed on a big screen.
 
+## Play it now!
+
+You can play this at https://trafficwarden.online
+
+(Assuming that I haven't neglected to keep the server running, the domain name renewed, and the letsencrypt cert working)
+
 ## Screenshots
 
 ![Screenshot of traffic warden being played on a phone](static/images/screenshot1_small.png)
