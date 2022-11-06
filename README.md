@@ -6,7 +6,7 @@ It's a real time online multiplayer game. Similar in style to jackbox games it i
 
 ## Screenshots
 
-<img src="/lexbailey/demo_webgame/raw/main/static/images/screenshot1.png" alt="Screenshot of traffic warden being played on a phone" width="400px">
+![Screenshot of traffic warden being played on a phone](static/images/screenshot1_small.png)
 
 ## Installing and running
 
