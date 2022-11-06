@@ -108,6 +108,9 @@ void init_arena(){
 }
 
 /*
+
+The python code that was ported to C
+
     def step_player(self, player_id):
         p = player_id
         player = self.players[p]
@@ -137,7 +140,6 @@ void init_arena(){
                 player.set_pos((newxy, newdir))
                 newcell.set_car(player)
                 oldcell.set_car(None)
-
         if newcell.tile is not None:
             player.set_pos((newxy, newcell.tile))
         if player.has_reached_goal():

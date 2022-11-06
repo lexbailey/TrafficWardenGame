@@ -425,7 +425,6 @@ class GameHandler:
 
     def polled(self):
         self.last_polled_at = time.time()
-        print(self.last_polled_at)
 
     def notify(self):
         if time.time() - self.last_polled_at > (60*15): # fifteen minutes with no activity means game gets killed
@@ -524,7 +523,10 @@ class GameHandler:
         self.start_thread()
 
     def end(self):
-        self.stop_thread.set()
+        try:
+            self.stop_thread.set()
+        except AttributeError: # wow this is a hack
+            pass
         for p in self.players.values():
             p.kick()
         self.state = 'ended'

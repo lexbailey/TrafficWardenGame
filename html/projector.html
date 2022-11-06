@@ -139,6 +139,7 @@
                             <h2>Controls</h2>
                             <div><button disabled={Object.keys(this.state.proj.players).length < 2} onClick={()=>{this.socket.emit('start_game')}}>Start game</button></div>
                             <div><button onClick={()=>{this.socket.emit('reset_players')}}>Reset (Remove all players)</button></div>
+                            <div><button onClick={()=>{this.socket.emit('close_lobby')}}>Close this lobby</button></div>
                         </div>
                     </div>;
                 }
@@ -166,7 +167,11 @@
 
                 }
                 else if (this.state.proj.state == 'ended') {
-                    return <div><p>The game has been ended by the server. This usually only happens when there's no activity for a long time.</p></div>
+                    return <div>
+                        <p>The game has been ended by the server.</p>
+                        <p>If you didn't deliberately end the game, then it probably timed out for inactivity.</p>
+                        <p><a href='/'>Return to start page</a></p>
+                    </div>
                 }
                 else{
                     return <div><p>Error, game is in unknown state</p></div>

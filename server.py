@@ -29,6 +29,13 @@ games = {}
 projectors = {}
 players = {}
 
+@app.route('/stats')
+def stats():
+    if config.get('show_stats', False):
+        return flask.render_template('stats.html', games=games, projectors=projectors, players=players)
+    else:
+        return flask.render_template('error.html', error='Forbidden'), 403
+
 @app.route('/')
 def root():
     is_in_game = False
@@ -48,6 +55,13 @@ def notify(tok):
         if sid is not None:
             sio.emit('new_player_state', p.get_phone_data(), to=sid)
     if game.state == 'ended':
+        for p in game.projectors:
+            if p in projectors:
+                del projectors[p]
+        for p in game.players:
+            sid = game.players[p].sid
+            if sid in players:
+                del players[sid]
         del games[tok]
 
 def join_info(tok):
@@ -75,7 +89,8 @@ def game():
 def abort():
     if 'game_token' in flask.session:
         if flask.session['game_token'] in games:
-            del games[flask.session['game_token']]
+            games[flask.session['game_token']].end()
+            games[flask.session['game_token']].notify()
         del flask.session['game_token']
     return flask.redirect('/', code=303)
 
@@ -192,6 +207,18 @@ def to_lobby():
         return
     game = games[tok]
     game.return_to_lobby()
+
+@sio.on('close_lobby')
+def close_lobby():
+    sid = flask.request.sid
+    if sid not in projectors:
+        return
+    tok = projectors[sid]
+    if tok not in games:
+        return
+    game = games[tok]
+    game.end()
+    game.notify()
 
 @sio.on('remove_player')
 def remove_player(player_index):
