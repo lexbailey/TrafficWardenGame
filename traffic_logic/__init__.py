@@ -191,6 +191,9 @@ class TrafficWardenLogic:
                 player.set_pos((newxy, newdir))
                 newcell.set_car(player)
                 oldcell.set_car(None)
+            else:
+                newxy = xy
+                newcell = oldcell
         if newcell.tile is not None:
             player.set_pos((newxy, newcell.tile))
         if player.has_reached_goal():
