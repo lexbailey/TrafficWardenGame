@@ -146,11 +146,11 @@
                 else if (this.state.proj.state == 'running') {
                     return <div>
                         <div class='content_left'>
-                            <h2>Game in progress</h2>
-                            <p>{this.summary()}</p>
                             {this.renderGrid(this.state.proj.game.grid, this.state.proj.players)}
                         </div>
                         <div class='content_right'>
+                            <h2>Game in progress</h2>
+                            <p>{this.summary()}</p>
                             <h3>Leaderboard</h3>
                             {this.renderScores(this.state.proj.players, false)}
                             <h3>Play order for this round</h3>

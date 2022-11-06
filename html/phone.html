@@ -152,8 +152,14 @@
                         <p>Type your name and then wait for the game to start.</p>
                         <label for='name'>Name</label>
                         <input onInput={(e)=>{this.socket.emit('rename', e.target.value)}} />
-                        <p>{Object.keys(this.state.proj.players).length} players in.</p>
-                        <button onClick={()=>{this.quit()}}>Leave lobby</button>
+                        <h3>How to play</h3>
+                        <p>When the game starts you will see a grid. Look for your car on the grid, and look for your goal spot.</p>
+                        <p>You will be given arrow tiles to place on the grid to direct your car to your goal spot.</p>
+                        <p>Reach your goal five times to win.</p>
+                        <p>Watch our for who&#39;s on the top of the leaderboard, use your spare tiles to sabotage them.</p>
+                        <h3>Other stuff...</h3>
+                        <p>{Object.keys(this.state.proj.players).length} players are in.</p>
+                        <p>Didn&#39;t mean to join the game? <button onClick={()=>{this.quit()}}>Leave lobby</button></p>
                     </div>;
                 }
                 else if (this.state.proj.state == 'running') {
