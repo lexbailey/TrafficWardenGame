@@ -36,11 +36,26 @@
                 return rot;
             }
 
+            ranks(players){
+                var rank = 1;
+                var ranks = [rank];
+                var cur_score = players[0].score;
+                players.slice(1).forEach(p=>{
+                    if (p.score < cur_score){
+                        rank = ranks.length + 1;
+                    }
+                    ranks.push(rank);
+                    cur_score = p.score;
+                });
+                return ranks;
+            }
+
             renderScores(players, is_final){
                 players.sort((a, b)=>b.score - a.score);
+                var ranks = this.ranks(players);
                 return <div>
                     <ol>
-                        {players.map((p)=><li><img src={`static/images/car_${p.index}.svg`} width='20px'/>{p.name} <span style={ {fontWeight:'bold'} }>({p.score})</span></li>)}
+                        {players.map((p,i)=><li value={ranks[i]}><img src={`static/images/car_${p.index}.svg`} width='20px'/>{p.name} <span style={ {fontWeight:'bold'} }>({p.score})</span></li>)}
                     </ol>
                 </div>;
             }
